@@ -16,34 +16,29 @@ class Solution(object):
         :type n: int
         :rtype: List[str]
         """
-        situations = set()
-        self.list_all_add_situation(n, situations)
-        situations.add([n, 0])
-        for i in situations:
-            print i
-
-    def list_all_add_situation(self, n):
+        if n == 2:
+            return ['(())', '()()']
         if n == 1:
-            return [1]
-        child_result = []
-        if n % 2 == 0:
-            child_n = n // 2
-            situations.add((child_n, child_n))
-            situations.add(([child_n] + self.list_all_add_situation(child_n, situations)))
-            situations.add((self.list_all_add_situation(child_n, situations) + [child_n]))
-        else:
-            small_child_n = n // 2
-            big_child_n = n // 2 + 1
-            situations.add((small_child_n, big_child_n))
-            situations.add(([small_child_n] + self.list_all_add_situation(big_child_n, situations)))
-            situations.add((self.list_all_add_situation(small_child_n, situations) + [big_child_n]))
+            return ['()']
+        result = set()
+        child_results = {}
+        for i in range(1, n):
+            i_temp_child_result = child_results.get(i, None)
+            n_i_temp_child_result = child_results.get(n - i, None)
+            if i_temp_child_result is None:
+                child_results[i] = self.generateParenthesis(i)
+            if n_i_temp_child_result is None:
+                child_results[n - i] = self.generateParenthesis(n - i)
 
-            situations.add((big_child_n, small_child_n))
-            situations.add(([big_child_n] + self.list_all_add_situation(small_child_n, situations)))
-            situations.add((self.list_all_add_situation(big_child_n, situations) + [small_child_n]))
+            for j in child_results[i]:
+                result.add(j + (n - i) * '(' + (n - i) * ')')
+            for j in child_results[n - i]:
+                result.add(i * '(' + ')' * i + j)
+        result.add(n * '(' + ')' * n)
+        return list(result)
 
 s = Solution()
-s.generateParenthesis(5)
-
+for i in sorted(s.generateParenthesis(5)):
+    print i
 
 
